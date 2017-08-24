@@ -220,3 +220,17 @@ go get -u github.com/Axect/RGE
 		```julia
 		include("plot.jl")
 		```
+		
+	3. If loading is complete, then use ```main()```
+	
+		```julia
+		main()
+		```
+	
+	4. Choose what you want to draw (Maybe you can choose whole : type ```1 2 3 4```)
+	
+		```julia
+		1 2 # Want to draw only 1 and 2 options
+		```
+	
+	5. If drawing is complete, you can see plots in ```Fig/```
