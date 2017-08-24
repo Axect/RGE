@@ -1,6 +1,6 @@
 # RGE
 
-<font size=2> : Golang Pacakge which solves Renormalization Group Equation
+<font size=2> : Golang Package which solves Renormalization Group Equation
 
 ## Installation
 
