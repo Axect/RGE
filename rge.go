@@ -2,7 +2,6 @@ package RGE
 
 import (
 	"fmt"
-	"log"
 	"math"
 
 	"github.com/Axect/csv"
@@ -60,21 +59,7 @@ func (C *Container) SolveRGE(mt, xi float64) {
 }
 
 // RGERunning is main tool
-func RGERunning() {
-	fmt.Println("--------------------------------")
-	fmt.Println("Welcome to RGE.go")
-	fmt.Println("--------------------------------")
-	fmt.Println()
-	fmt.Println("Please input mt, xi")
-
-	var mt, xi float64
-
-	_, err := fmt.Scanf("%v %v", &mt, &xi)
-	// Error Check!
-	if err != nil {
-		log.Fatal("Can't read mt, xi - Plz input proper value")
-	}
-
+func RGERunning(mt, xi float64) []int {
 	var C Container
 	C.SolveRGE(mt, xi)
 
@@ -88,6 +73,7 @@ func RGERunning() {
 	xiint := int(xi)
 	title := fmt.Sprintf("../Data/Gauge_%d_%d_%d.csv", mtint, mtfloat, xiint)
 	csv.Write(W, title)
+	return []int{mtint, mtfloat, xiint}
 }
 
 // Convert supports csv.Write
