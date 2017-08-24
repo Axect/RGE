@@ -8,6 +8,11 @@
 go get -u github.com/Axect/RGE
 ```
 
+## Prerequisites
+
+* Golang (ver >= 1.8.3)
+* Julia (ver >= 0.6.0)
+
 ## How to use
 
 1. Set global constants in ```const.go```  
