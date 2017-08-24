@@ -1,7 +1,7 @@
 package rge
 
 // Container contains coupling constamts
-type Container [Step]float64
+type Container [Step]RGE
 
 // Bay is array of Container
 type Bay []Container
