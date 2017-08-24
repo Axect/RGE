@@ -1,4 +1,4 @@
-package rge
+package RGE
 
 //----------------------------
 // Declare your rge variables

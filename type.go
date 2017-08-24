@@ -1,4 +1,4 @@
-package rge
+package RGE
 
 // Container contains coupling constamts
 type Container [Step]RGE

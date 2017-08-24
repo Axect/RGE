@@ -1,4 +1,4 @@
-package rge
+package RGE
 
 import "math"
 

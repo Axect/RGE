@@ -1,6 +1,12 @@
-package rge
+package RGE
 
-import "math"
+import (
+	"fmt"
+	"log"
+	"math"
+
+	"github.com/Axect/csv"
+)
 
 type Run interface {
 	Run(float64, float64) // Run RGE
@@ -51,4 +57,44 @@ func (C *Container) SolveRGE(mt, xi float64) {
 		R.Run(mt, xi)
 		C[i] = R.Copy()
 	}
+}
+
+// RGERunning is main tool
+func RGERunning() {
+	fmt.Println("--------------------------------")
+	fmt.Println("Welcome to RGE.go")
+	fmt.Println("--------------------------------")
+	fmt.Println()
+	fmt.Println("Please input mt, xi")
+
+	var mt, xi float64
+
+	_, err := fmt.Scanf("%v %v", &mt, &xi)
+	// Error Check!
+	if err != nil {
+		log.Fatal("Can't read mt, xi - Plz input proper value")
+	}
+
+	var C Container
+	C.SolveRGE(mt, xi)
+
+	W := make([][]string, len(C), len(C))
+
+	for i, elem := range C {
+		W[i] = Convert([]float64{elem.t, elem.lH, elem.yt, elem.g1, elem.g2, elem.g3, elem.G})
+	}
+	mtint := int(mt)
+	mtfloat := int((mt-float64(mtint))*100 + 0.49)
+	xiint := int(xi)
+	title := fmt.Sprintf("../Data/Gauge_%d_%d_%d.csv", mtint, mtfloat, xiint)
+	csv.Write(W, title)
+}
+
+// Convert supports csv.Write
+func Convert(List []float64) []string {
+	Temp := make([]string, len(List), len(List))
+	for i := range List {
+		Temp[i] = fmt.Sprintf("%v", List[i])
+	}
+	return Temp
 }
