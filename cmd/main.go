@@ -12,6 +12,11 @@ import (
 	"github.com/Axect/check"
 )
 
+const (
+	cmdName = "julia"
+	cmdDir1 = "Julia/"
+)
+
 func main() {
 	// parameter set (choose can be list)
 	// 1.Gauge, 2.G(t), 3.Lambda, 4.Potential
@@ -37,16 +42,12 @@ func main() {
 	fmt.Println()
 
 	// Cmd Settings
-	var (
-		cmdOut []byte
-		err    error
-	)
-
-	cmdName := "julia"
-	cmdDir1 := "Julia/"
 	cmdBody := strings.Fields(fmt.Sprintf("%d %d %d", mtint, mtfloat, int(xi+0.4)))
 	var cmdDir2 string
-	var cmdDir, cmdArgs []string
+	var cmdDir []string
+
+	// Parallel Setting
+	done := make(chan bool)
 
 	fmt.Println("Input Parameter: ", cmdBody)
 	// Gauge Plot
@@ -71,14 +72,30 @@ func main() {
 	}
 
 	for _, dir := range cmdDir {
-		cmdArgs = append([]string{cmdDir1 + dir}, cmdBody...)
-		if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err != nil {
-			log.Fatal("Can't execute commands")
-		}
-		comp := string(cmdOut)
-		fmt.Println(comp)
-		fmt.Println("Complete!")
+		go Routine(cmdDir1, dir, cmdBody, done)
 	}
+	<-done
+}
+
+func Routine(cmdDir1, dir string, cmdBody []string, c chan bool) {
+	defer Assign(c)
+	cmdArgs := append([]string{cmdDir1 + dir}, cmdBody...)
+
+	var (
+		cmdOut []byte
+		err    error
+	)
+
+	if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err != nil {
+		log.Fatal("Can't execute commands")
+	}
+	comp := string(cmdOut)
+	fmt.Println(comp)
+	fmt.Println("Complete!")
+}
+
+func Assign(c chan bool) {
+	c <- true
 }
 
 func Welcome() {
