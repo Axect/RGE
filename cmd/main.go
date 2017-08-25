@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/Axect/RGE"
 	"github.com/Axect/check"
@@ -16,6 +17,8 @@ const (
 	cmdName     = "julia"
 	JuliaFolder = "Julia/"
 )
+
+var wg sync.WaitGroup
 
 func main() {
 	// parameter set (choose can be list)
@@ -47,9 +50,6 @@ func main() {
 
 	fmt.Println("Input Parameter: ", cmdBody)
 
-	// Parallel Setting
-	PlotList := make(chan string)
-
 	// Gauge Plot
 	if check.Contains("1", choice) {
 		subDir = "Gauge_plot.jl"
@@ -72,15 +72,17 @@ func main() {
 	}
 
 	for _, dir := range cmdDir {
-		go Routine(JuliaFolder, dir, cmdBody, PlotList)
+		wg.Add(1)
+		go Routine(JuliaFolder, dir, cmdBody)
 	}
+	wg.Wait()
 
-	for plot := range PlotList {
-		fmt.Println(plot)
-	}
+	fmt.Println("All Process Finished")
 }
 
-func Routine(JuliaFolder, subdir string, cmdBody []string, c chan string) {
+func Routine(JuliaFolder, subdir string, cmdBody []string) {
+	defer wg.Done()
+
 	cmdArgs := append([]string{JuliaFolder + subdir}, cmdBody...)
 
 	var (
@@ -93,11 +95,9 @@ func Routine(JuliaFolder, subdir string, cmdBody []string, c chan string) {
 	}
 	comp := string(cmdOut)
 	fmt.Println(comp)
-	Assign(c, (subdir + "complete!"))
-}
-
-func Assign(c chan string, text string) {
-	c <- text
+	fmt.Println()
+	fmt.Println(subdir, " Complete!")
+	return
 }
 
 func Welcome() {
