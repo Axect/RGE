@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	cmdName = "julia"
-	cmdDir1 = "Julia/"
+	cmdName     = "julia"
+	JuliaFolder = "Julia/"
 )
 
 func main() {
@@ -33,7 +33,6 @@ func main() {
 	MX := RGE.RGERunning(mt, xi)
 	mtint := MX[0]
 	mtfloat := MX[1]
-	fmt.Println(mtint, mtfloat, xi)
 
 	// Handle Plot with Julia
 	fmt.Println("-------------------------")
@@ -43,43 +42,46 @@ func main() {
 
 	// Cmd Settings
 	cmdBody := strings.Fields(fmt.Sprintf("%d %d %d", mtint, mtfloat, int(xi+0.4)))
-	var cmdDir2 string
+	var subDir string
 	var cmdDir []string
 
-	// Parallel Setting
-	done := make(chan bool)
-
 	fmt.Println("Input Parameter: ", cmdBody)
+
+	// Parallel Setting
+	PlotList := make(chan string)
+
 	// Gauge Plot
 	if check.Contains("1", choice) {
-		cmdDir2 = "Gauge_plot.jl"
-		cmdDir = append(cmdDir, cmdDir2)
+		subDir = "Gauge_plot.jl"
+		cmdDir = append(cmdDir, subDir)
 		fmt.Println("Draw Gauge Plot...")
 	}
 
 	// G(t) Plot
 	if check.Contains("2", choice) {
-		cmdDir2 = "G_plot.jl"
-		cmdDir = append(cmdDir, cmdDir2)
+		subDir = "G_plot.jl"
+		cmdDir = append(cmdDir, subDir)
 		fmt.Println("Draw G(t) Plot...")
 	}
 
 	// Lambda Plot
 	if check.Contains("3", choice) {
-		cmdDir2 = "Lambda_plot.jl"
-		cmdDir = append(cmdDir, cmdDir2)
+		subDir = "Lambda_plot.jl"
+		cmdDir = append(cmdDir, subDir)
 		fmt.Println("Draw Lambda Plot...")
 	}
 
 	for _, dir := range cmdDir {
-		go Routine(cmdDir1, dir, cmdBody, done)
+		go Routine(JuliaFolder, dir, cmdBody, PlotList)
 	}
-	<-done
+
+	for plot := range PlotList {
+		fmt.Println(plot)
+	}
 }
 
-func Routine(cmdDir1, dir string, cmdBody []string, c chan bool) {
-	defer Assign(c)
-	cmdArgs := append([]string{cmdDir1 + dir}, cmdBody...)
+func Routine(JuliaFolder, subdir string, cmdBody []string, c chan string) {
+	cmdArgs := append([]string{JuliaFolder + subdir}, cmdBody...)
 
 	var (
 		cmdOut []byte
@@ -91,11 +93,11 @@ func Routine(cmdDir1, dir string, cmdBody []string, c chan bool) {
 	}
 	comp := string(cmdOut)
 	fmt.Println(comp)
-	fmt.Println("Complete!")
+	Assign(c, (subdir + "complete!"))
 }
 
-func Assign(c chan bool) {
-	c <- true
+func Assign(c chan string, text string) {
+	c <- text
 }
 
 func Welcome() {
