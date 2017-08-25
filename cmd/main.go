@@ -95,8 +95,8 @@ func Routine(JuliaFolder, subdir string, cmdBody []string) {
 	}
 	comp := string(cmdOut)
 	fmt.Println(comp)
-	fmt.Println()
 	fmt.Println(subdir, " Complete!")
+	fmt.Println()
 	return
 }
 
