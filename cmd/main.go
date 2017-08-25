@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/Axect/RGE"
@@ -11,54 +13,72 @@ import (
 )
 
 func main() {
-	// Input mt, xi what you want to draw
-	mt, xi := 170.85, 50.
+	// parameter set (choose can be list)
+	// 1.Gauge, 2.G(t), 3.Lambda, 4.Potential
+	Mt, Xi, choice := os.Args[1], os.Args[2], os.Args[3:]
+	mt, err1 := strconv.ParseFloat(Mt, 64)
+	xi, err2 := strconv.ParseFloat(Xi, 64)
 
+	if err1 != nil || err2 != nil {
+		log.Fatal("Can't convert string to float64. Plz input proper value")
+	}
 	Welcome()
-	DrawPlot(mt, xi)
-}
-
-func DrawPlot(mt, xi float64) {
 	// Running and receive mtint, mtfloat, xi
+	fmt.Println("Data Processing...")
 	MX := RGE.RGERunning(mt, xi)
 	mtint := MX[0]
 	mtfloat := MX[1]
+	fmt.Println(mtint, mtfloat, xi)
 
 	// Handle Plot with Julia
 	fmt.Println("-------------------------")
 	fmt.Println("Welcome to RGE Plot")
 	fmt.Println("-------------------------")
 	fmt.Println()
-	fmt.Println("Choose what you want to draw")
-	fmt.Println("1.Gauge, 2.G(t), 3.Lambda, 4.Potential")
 
-	var choose string
-	_, err := fmt.Scanf("Number: %s", &choose)
+	// Cmd Settings
+	var (
+		cmdOut []byte
+		err    error
+	)
 
-	if err != nil {
-		log.Fatal("Can't Scan")
-	}
-	choice := strings.Fields(choose)
+	cmdName := "julia"
+	cmdDir1 := "Julia/"
+	cmdBody := strings.Fields(fmt.Sprintf("%d %d %d", mtint, mtfloat, int(xi+0.4)))
+	var cmdDir2 string
+	var cmdDir, cmdArgs []string
 
+	fmt.Println("Input Parameter: ", cmdBody)
+	// Gauge Plot
 	if check.Contains("1", choice) {
-		command := fmt.Sprintf("julia Julia/Gauge_plot.jl %d %d %d", mtint, mtfloat, xi)
+		cmdDir2 = "Gauge_plot.jl"
+		cmdDir = append(cmdDir, cmdDir2)
 		fmt.Println("Draw Gauge Plot...")
-		exec.Command("sh", "-c", command).Run()
-		fmt.Println("Complete!")
-	}
-	if check.Contains("2", choice) {
-		command := fmt.Sprintf("julia Julia/G_plot.jl %d %d %d", mtint, mtfloat, xi)
-		fmt.Println("Draw G(t) Plot...")
-		exec.Command("sh", "-c", command).Run()
-		fmt.Println("Complete!")
-	}
-	if check.Contains("3", choice) {
-		command := fmt.Sprintf("julia Julia/Lambda_plot.jl %d %d %d", mtint, mtfloat, xi)
-		fmt.Println("Draw Lambda Plot...")
-		exec.Command("sh", "-c", command).Run()
-		fmt.Println("Complete!")
 	}
 
+	// G(t) Plot
+	if check.Contains("2", choice) {
+		cmdDir2 = "G_plot.jl"
+		cmdDir = append(cmdDir, cmdDir2)
+		fmt.Println("Draw G(t) Plot...")
+	}
+
+	// Lambda Plot
+	if check.Contains("3", choice) {
+		cmdDir2 = "Lambda_plot.jl"
+		cmdDir = append(cmdDir, cmdDir2)
+		fmt.Println("Draw Lambda Plot...")
+	}
+
+	for _, dir := range cmdDir {
+		cmdArgs = append([]string{cmdDir1 + dir}, cmdBody...)
+		if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err != nil {
+			log.Fatal("Can't execute commands")
+		}
+		comp := string(cmdOut)
+		fmt.Println(comp)
+		fmt.Println("Complete!")
+	}
 }
 
 func Welcome() {

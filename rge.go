@@ -71,7 +71,7 @@ func RGERunning(mt, xi float64) []int {
 	mtint := int(mt)
 	mtfloat := int((mt-float64(mtint))*100 + 0.49)
 	xiint := int(xi)
-	title := fmt.Sprintf("../Data/Gauge_%d_%d_%d.csv", mtint, mtfloat, xiint)
+	title := fmt.Sprintf("Data/Gauge_%d_%d_%d.csv", mtint, mtfloat, xiint)
 	csv.Write(W, title)
 	return []int{mtint, mtfloat, xiint}
 }
