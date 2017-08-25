@@ -1,6 +1,8 @@
 hash: 265ceeb519edc1a9cbb8eca912e82faed80e246737ca0ee67e7450b55e7971b8
-updated: 2017-08-24T16:18:39.478583078+09:00
+updated: 2017-08-25T13:19:00.07479401+09:00
 imports:
+- name: github.com/Axect/check
+  version: 2c573ce635a6ebecb37097b2b29349d8c6767405
 - name: github.com/Axect/csv
   version: fb2824a02bb38fa22d6745e26a72a13eff7f745f
 testImports: []
