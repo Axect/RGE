@@ -140,7 +140,7 @@ go get -u github.com/Axect/RGE
 			B.gamma2 = -1. / (math.Pow(16*math.Pow(math.Pi, 2), 2)) * (271./32*math.Pow(R.g2, 4) - 9./16*math.Pow(R.g1, 2)*math.Pow(R.g2, 2) - 431./96*sh*math.Pow(R.g1, 4) - 5./2*(9./4*math.Pow(R.g2, 2)+17./12*math.Pow(R.g1, 2)+8*math.Pow(R.g3, 2))*math.Pow(R.yt, 2) + 27./4*sh*math.Pow(R.yt, 4) - 6*math.Pow(sh, 3)*math.Pow(R.lH, 2))
 		}
 		```
-	3. Calculat total Beta function (1-loop + 2-loop)
+	3. Calculate total Beta function (1-loop + 2-loop)
 		
 		```Go
 		// Calculate Total Beta Function
@@ -157,7 +157,7 @@ go get -u github.com/Axect/RGE
 		}
 		```
 
-5. Declare method to solve RGE in ```rge.go```
+5. Declare method to solve RGE in `rge.go`
 
 	```Go
 	// Single Running - You can change Numerical Integration method here (Default: Euler)
@@ -204,38 +204,184 @@ go get -u github.com/Axect/RGE
 			C[i] = R.Copy()
 		}
 	}
+	
+	// RGERunning is main tool
+	func RGERunning(mt, xi float64) []int {
+		var C Container
+		C.SolveRGE(mt, xi)
+	
+		W := make([][]string, len(C), len(C))
+	
+		for i, elem := range C {
+			W[i] = Convert([]float64{elem.t, elem.lH, elem.yt, elem.g1, elem.g2, elem.g3, elem.G})
+		}
+		mtint := int(mt)
+		mtfloat := int((mt-float64(mtint))*100 + 0.49)
+		xiint := int(xi)
+		title := fmt.Sprintf("Data/Gauge_%d_%d_%d.csv", mtint, mtfloat, xiint)
+		csv.Write(W, title)
+		return []int{mtint, mtfloat, xiint}
+	}
+	
+	// Convert supports csv.Write
+	func Convert(List []float64) []string {
+		Temp := make([]string, len(List), len(List))
+		for i := range List {
+			Temp[i] = fmt.Sprintf("%v", List[i])
+		}
+		return Temp
+	}
 	```
+	* RGERunning : Transfer mtint, mtfloat, xi for file name \& Main Action - solve RGE
+	* Convert : `[]float64` to `[]string`
 
-6. Run in ```cmd/main.go```
+6. Handle `cmd/main.go` : From Go to Julia
 
 	```Go
-	go run cmd/main.go
+	const (
+		cmdName     = "julia"
+		JuliaFolder = "Julia/"
+	)
+	
+	var wg sync.WaitGroup
+	
+	func main() {
+		// parameter set (choose can be list)
+		// 1.Gauge, 2.G(t), 3.Lambda, 4.Potential
+		Mt, Xi, choice := os.Args[1], os.Args[2], os.Args[3:]
+		mt, err1 := strconv.ParseFloat(Mt, 64)
+		xi, err2 := strconv.ParseFloat(Xi, 64)
+	
+		if err1 != nil || err2 != nil {
+			log.Fatal("Can't convert string to float64. Plz input proper value")
+		}
+		Welcome()
+		// Running and receive mtint, mtfloat, xi
+		fmt.Println("Data Processing...")
+		MX := RGE.RGERunning(mt, xi)
+		mtint := MX[0]
+		mtfloat := MX[1]
+	
+		// Handle Plot with Julia
+		fmt.Println("-------------------------")
+		fmt.Println("Welcome to RGE Plot")
+		fmt.Println("-------------------------")
+		fmt.Println()
+	
+		// Cmd Settings
+		cmdBody := strings.Fields(fmt.Sprintf("%d %d %d", mtint, mtfloat, int(xi+0.4)))
+		var subDir string
+		var cmdDir []string
+	
+		fmt.Println("Input Parameter: ", cmdBody)
+	
+		// Gauge Plot
+		if check.Contains("1", choice) {
+			subDir = "Gauge_plot.jl"
+			cmdDir = append(cmdDir, subDir)
+			fmt.Println("Draw Gauge Plot...")
+		}
+	
+		// G(t) Plot
+		if check.Contains("2", choice) {
+			subDir = "G_plot.jl"
+			cmdDir = append(cmdDir, subDir)
+			fmt.Println("Draw G(t) Plot...")
+		}
+	
+		// Lambda Plot
+		if check.Contains("3", choice) {
+			subDir = "Lambda_plot.jl"
+			cmdDir = append(cmdDir, subDir)
+			fmt.Println("Draw Lambda Plot...")
+		}
+	
+		for _, dir := range cmdDir {
+			wg.Add(1)
+			go Routine(JuliaFolder, dir, cmdBody)
+		}
+		wg.Wait()
+	
+		fmt.Println("All Process Finished")
+	}
+	
+	func Routine(JuliaFolder, subdir string, cmdBody []string) {
+		defer wg.Done()
+	
+		cmdArgs := append([]string{JuliaFolder + subdir}, cmdBody...)
+	
+		var (
+			cmdOut []byte
+			err    error
+		)
+	
+		if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err != nil {
+			log.Fatal("Can't execute commands")
+		}
+		comp := string(cmdOut)
+		fmt.Println(comp)
+		fmt.Println(subdir, " Complete!")
+		fmt.Println()
+		return
+	}
+	
+	func Welcome() {
+		// Running with Go
+		fmt.Println("--------------------------------")
+		fmt.Println("Welcome to RGE.go")
+		fmt.Println("--------------------------------")
+		fmt.Println()
+	}
 	```
 
-7. Plot in julia
+7. Handle Julia Files in `Julia/`
 
-	1. Run julia in project folder
-		
-		```bash
-		julia
-		```
+	```Julia
+	using Plots
+
+	println("---------------------------")
+	println("Welcome to Gauge Plot.jl")
+	println("---------------------------")
 	
-	2. In julia, import ```plot.jl```
+	mt_int = ARGS[1]
+	mt_float = ARGS[2]
+	xi = ARGS[3]
 	
-		```julia
-		include("plot.jl")
-		```
-		
-	3. If loading is complete, then use ```main()```
+	Data = readcsv("Data/Gauge_$(mt_int)_$(mt_float)_$(xi).csv")
 	
-		```julia
-		main()
-		```
 	
-	4. Choose what you want to draw (Maybe you can choose whole : type ```1 2 3 4```)
+	t = Data[:,1];
+	# λ = Data[:,2];
+	yt = Data[:,3];
+	g1 = Data[:,4];
+	g2 = Data[:,5];
+	g3 = Data[:,6];
+	# G = Data[:,7];
 	
-		```julia
-		1 2 # Want to draw only 1 and 2 options
-		```
+	# Background
+	gr(size=(1000,600), dpi=600)
 	
-	5. If drawing is complete, you can see plots in ```Fig/```
+	# Gauge Plot
+	plot(t, yt, title="Gauge Plots", label="yt", show=false);
+	plot!(t, g1, label="g1");
+	plot!(t, g2, label="g2");
+	plot!(t, g3, label="g3");
+	xlabel!("t");
+	ylabel!("gauge");
+	savefig("Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).svg")
+	```
+	* Handle Julia is so easy.
+	* You should do `Pkg.add("Plots")` in Julia first.
+	
+8. Build `main.go`
+
+	```bash
+	go build cmd/main.go
+	```
+	
+9. Run with args
+
+	```bash
+	./main 170.85 50 1 2 3
+	```
+	* ./main (Top mass) (xi) (Plots: 1.Gauge, 2.G(t), 3.Lambda)
