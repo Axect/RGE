@@ -1,4 +1,4 @@
-using DataFrames, Gadfly
+using Plots
 
 println("---------------------------")
 println("Welcome to G(t) Plot.jl")
@@ -13,10 +13,17 @@ Data = readcsv("Data/Gauge_$(mt_int)_$(mt_float)_$(xi).csv")
 
 t = Data[:,1];
 # λ = Data[:,2];
-# gauge = vcat(Data[:,3], Data[:,4], Data[:,5], Data[:,6]); # yt, g1, g2, g3
+# yt = Data[:,3];
+# g1 = Data[:,4];
+# g2 = Data[:,5];
+# g3 = Data[:,6];
 G = Data[:,7];
 
-# G(t) Plot
-dg = DataFrame(t=t, G=G, index=repeat(["G",], inner=[length(t)]));
-pl2 = plot(dg, x=:t, y=:G, color=:index, Geom.line, Guide.title("G(t)"), Theme(background_color=color("white")))
-draw(SVG("Fig/G_$(mt_int)_$(mt_float)_$(xi).svg", 1000px, 600px), pl2)
+# Background
+gr(size=(1000,600), dpi=600)
+
+# Gauge Plot
+plot(t, G, title="Gauge Plots", label="G", show=false);
+xlabel!("t");
+ylabel!("gauge");
+savefig("Fig/G_$(mt_int)_$(mt_float)_$(xi).svg")

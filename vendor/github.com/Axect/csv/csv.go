@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // Write writes csv file
@@ -33,6 +34,18 @@ func Read(directory string) [][]string {
 	reader := csv.NewReader(file)
 	rows, err := reader.ReadAll()
 	return rows
+}
+
+// Convert converts [][]string to [][]float64
+func Convert(str [][]string) [][]float64 {
+	Temp := make([][]float64, len(str), len(str))
+	for i := range str {
+		for j := range str[i] {
+			temp, _ := strconv.ParseFloat(str[i][j], 64)
+			Temp[i] = append(Temp[i], temp)
+		}
+	}
+	return Temp
 }
 
 func checkError(message string, err error) {

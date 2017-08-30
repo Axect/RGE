@@ -1,4 +1,4 @@
-using DataFrames, Gadfly
+using Plots, LaTeXStrings
 
 println("---------------------------")
 println("Welcome to Lambda Plot.jl")
@@ -16,8 +16,11 @@ t = Data[:,1];
 # gauge = vcat(Data[:,3], Data[:,4], Data[:,5], Data[:,6]); # yt, g1, g2, g3
 # G = Data[:,7];
 
-# Gauge Plot
-dh = DataFrame(t=t, λ=λ, index=repeat(["λ",], inner=[length(t)]));
-pl3 = plot(dh, x=:t, y=:λ, color=:index, Geom.line, Guide.title("λ(t)"), Theme(background_color=color("white")))
-draw(SVG("Fig/lambda_$(mt_int)_$(mt_float)_$(xi).svg", 1000px, 600px), pl3)
+# Background
+gr(size=(1000,600), dpi=600)
 
+# Gauge Plot
+plot(t, λ, title="Gauge Plots", label=L"$\lambda$", show=false);
+xlabel!("t");
+ylabel!("gauge");
+savefig("Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).svg")
