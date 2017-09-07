@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -14,7 +12,10 @@ import (
 )
 
 const (
-	cmdName     = "julia"
+	ver         = "0.0.1"
+	author      = "Axect"
+	page        = "https://github.com/Axect/RGE"
+	Julia       = "julia"
 	JuliaFolder = "Julia/"
 )
 
@@ -23,24 +24,22 @@ var wg sync.WaitGroup
 func main() {
 	// parameter set (choose can be list)
 	// 1.Gauge, 2.G(t), 3.Lambda, 4.Potential
-	Mt, Xi, choice := os.Args[1], os.Args[2], os.Args[3:]
-	mt, err1 := strconv.ParseFloat(Mt, 64)
-	xi, err2 := strconv.ParseFloat(Xi, 64)
-
-	if err1 != nil || err2 != nil {
-		log.Fatal("Can't convert string to float64. Plz input proper value")
+	if err := exec.Command("clear", "").Run(); err != nil {
+		log.Fatal("Can't clear")
 	}
-	Welcome()
+	mt, xi, choice := Welcome()
+
 	// Running and receive mtint, mtfloat, xi
 	fmt.Println("Data Processing...")
 	MX := RGE.RGERunning(mt, xi)
 	mtint := MX[0]
 	mtfloat := MX[1]
+	fmt.Println()
 
 	// Handle Plot with Julia
-	fmt.Println("-------------------------")
-	fmt.Println("Welcome to RGE Plot")
-	fmt.Println("-------------------------")
+	fmt.Println("-------------------------------")
+	fmt.Println("  Plotting...  ")
+	fmt.Println("-------------------------------")
 	fmt.Println()
 
 	// Cmd Settings
@@ -90,7 +89,7 @@ func Routine(JuliaFolder, subdir string, cmdBody []string) {
 		err    error
 	)
 
-	if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err != nil {
+	if cmdOut, err = exec.Command(Julia, cmdArgs...).Output(); err != nil {
 		log.Fatal("Can't execute commands")
 	}
 	comp := string(cmdOut)
@@ -100,10 +99,31 @@ func Routine(JuliaFolder, subdir string, cmdBody []string) {
 	return
 }
 
-func Welcome() {
+func Welcome() (float64, float64, []string) {
 	// Running with Go
-	fmt.Println("--------------------------------")
-	fmt.Println("Welcome to RGE.go")
-	fmt.Println("--------------------------------")
+	fmt.Println("-------------------------------")
+	fmt.Println("  RGE Solver  ")
+	fmt.Printf("  ver %s   \n", ver)
+	fmt.Printf("  author %s  \n", author)
+	fmt.Printf("  page %s  \n", page)
+	fmt.Println("-------------------------------")
 	fmt.Println()
+	fmt.Println("__________  ___________________")
+	fmt.Println("\\______   \\/  _____/\\_   _____/")
+	fmt.Println(" |       _/   \\  ___ |    __)_")
+	fmt.Println(" |    |   \\    \\_\\  \\|        \\")
+	fmt.Println(" |____|_  /\\______  /_______  /")
+	fmt.Println("        \\/        \\/        \\/ ")
+	fmt.Println()
+	fmt.Println("Input parameters: ")
+	fmt.Println("ex) 170.85 50")
+	var Mt, Xi float64
+	choice := make([]string, 3, 3)
+	fmt.Scanln(&Mt, &Xi)
+	fmt.Println("Select Plots: 1.Gauge, 2.G(t), 3.Lambda")
+	for i := range choice {
+		fmt.Scan(&choice[i])
+	}
+	fmt.Println()
+	return Mt, Xi, choice
 }

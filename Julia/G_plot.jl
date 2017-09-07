@@ -20,10 +20,11 @@ t = Data[:,1];
 G = Data[:,7];
 
 # Background
-gr(size=(1000,600), dpi=600)
+gr(size=(1000,600), dpi=100)
 
 # Gauge Plot
 plot(t, G, title="Gauge Plots", label="G", show=false);
 xlabel!("t");
 ylabel!("gauge");
 savefig("Fig/G_$(mt_int)_$(mt_float)_$(xi).svg")
+run(`inkscape -z Fig/G_$(mt_int)_$(mt_float)_$(xi).svg -e Fig/G_$(mt_int)_$(mt_float)_$(xi).png -d 600`)
