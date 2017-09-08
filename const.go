@@ -5,7 +5,7 @@ package RGE
 // -----------------------
 
 const (
-	Mp       = 1.221 * 1E+19 // Plank Mass
+	Mp       = 1.221 * 1E+19 // Planck Mass
 	MpR      = 2.4 * 1E+18   // Reduced Planck Mass
 	MW       = 80.385        // Mass of W
 	MZ       = 91.1876       // Mass of Z

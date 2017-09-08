@@ -56,7 +56,7 @@ func (B *Beta) InputFormula(R RGE, mt, xi float64) {
 	B.gamma2 = -(271./32*math.Pow(R.g2, 4) - 9./16*math.Pow(R.g1, 2)*math.Pow(R.g2, 2) - 431./96*sh*math.Pow(R.g1, 4) - 5./2*(9./4*math.Pow(R.g2, 2)+17./12*math.Pow(R.g1, 2)+8*math.Pow(R.g3, 2))*math.Pow(R.yt, 2) + 27./4*sh*math.Pow(R.yt, 4) - 6*math.Pow(sh, 3)*math.Pow(R.lH, 2))
 }
 
-// Calculate Total Beta Function
+// BetaFunction calculate Total Beta Function
 func (B *Beta) BetaFunction() {
 	B.gamma = 1./(16*math.Pow(math.Pi, 2))*B.gamma1 + 1./math.Pow(16*math.Pow(math.Pi, 2), 2)*B.gamma2
 	g := MakeBeta(B.gamma)
