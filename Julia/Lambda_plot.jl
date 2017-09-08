@@ -1,8 +1,8 @@
 using Plots, LaTeXStrings
 
-println("---------------------------")
+println("-----------------------------------")
 println("  Welcome to Lambda Plot.jl")
-println("---------------------------")
+println("-----------------------------------")
 
 mt_int = ARGS[1]
 mt_float = ARGS[2]

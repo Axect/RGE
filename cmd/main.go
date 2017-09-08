@@ -37,9 +37,9 @@ func main() {
 	fmt.Println()
 
 	// Handle Plot with Julia
-	fmt.Println("-------------------------------")
+	fmt.Println("-----------------------------------")
 	fmt.Println("  Plotting...  ")
-	fmt.Println("-------------------------------")
+	fmt.Println("-----------------------------------")
 	fmt.Println()
 
 	// Cmd Settings
@@ -101,12 +101,12 @@ func Routine(JuliaFolder, subdir string, cmdBody []string) {
 
 func Welcome() (float64, float64, []string) {
 	// Running with Go
-	fmt.Println("-------------------------------")
+	fmt.Println("-----------------------------------")
 	fmt.Println("  RGE Solver  ")
 	fmt.Printf("  ver %s   \n", ver)
 	fmt.Printf("  author %s  \n", author)
 	fmt.Printf("  page %s  \n", page)
-	fmt.Println("-------------------------------")
+	fmt.Println("-----------------------------------")
 	fmt.Println()
 	fmt.Println("__________  ___________________")
 	fmt.Println("\\______   \\/  _____/\\_   _____/")

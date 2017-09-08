@@ -1,8 +1,8 @@
 using Plots
 
-println("---------------------------")
+println("-----------------------------------")
 println("  Welcome to Gauge Plot.jl")
-println("---------------------------")
+println("-----------------------------------")
 
 mt_int = ARGS[1]
 mt_float = ARGS[2]
