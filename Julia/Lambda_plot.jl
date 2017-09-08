@@ -1,7 +1,7 @@
 using Plots, LaTeXStrings
 
 println("---------------------------")
-println("Welcome to Lambda Plot.jl")
+println("  Welcome to Lambda Plot.jl")
 println("---------------------------")
 
 mt_int = ARGS[1]
@@ -25,3 +25,4 @@ xlabel!("t");
 ylabel!("gauge");
 savefig("Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).svg")
 run(`inkscape -z Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).svg -e Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).png -d 600`)
+run(`rm Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).svg`)

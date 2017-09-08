@@ -1,7 +1,7 @@
 using Plots
 
 println("---------------------------")
-println("Welcome to Gauge Plot.jl")
+println("  Welcome to Gauge Plot.jl")
 println("---------------------------")
 
 mt_int = ARGS[1]
@@ -31,3 +31,4 @@ xlabel!("t");
 ylabel!("gauge");
 savefig("Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).svg")
 run(`inkscape -z Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).svg -e Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).png -d 600`)
+run(`rm Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).svg`)
