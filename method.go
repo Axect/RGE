@@ -7,7 +7,7 @@ import (
 )
 
 // =============================================================================
-// You can define simple method in this file.
+//  Define simple method
 // =============================================================================
 
 // Copy protects RGE value which is in Container

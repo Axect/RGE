@@ -1,8 +1,8 @@
 package RGE
 
-//----------------------------
-// Declare your rge variables
-//----------------------------
+// =============================================================================
+//  Declare your rge variables
+// =============================================================================
 
 // RGE contains Gauge constants & field variables
 type RGE struct {

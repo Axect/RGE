@@ -2,9 +2,9 @@ package RGE
 
 import "math"
 
-//-------------------------
-// Declare Beta Functions
-//-------------------------
+// =============================================================================
+//  Declare Beta functions
+// =============================================================================
 
 // Beta Function: You can declare all of beta function list here
 type Beta struct {
