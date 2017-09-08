@@ -1,4 +1,4 @@
-using Plots, LaTeXStrings
+using Winston
 
 println("-----------------------------------")
 println("  Welcome to Lambda Plot.jl")
@@ -16,13 +16,15 @@ t = Data[:,1];
 # gauge = vcat(Data[:,3], Data[:,4], Data[:,5], Data[:,6]); # yt, g1, g2, g3
 # G = Data[:,7];
 
-# Background
-gr(size=(1000,600), dpi=100)
-
 # Gauge Plot
-plot(t, λ, title="Gauge Plots", label=L"$\lambda$", show=false);
-xlabel!("t");
-ylabel!("gauge");
-savefig("Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).svg")
-run(`inkscape -z Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).svg -e Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).png -d 600`)
+p = FramedPlot(
+    title="Lambda Plots",
+    xlabel="t",
+    ylabel="\\lambda");
+C = Curve(t, λ)
+setattr(C, "label", "\\lambda")
+lgnd = Legend(.9, .9, [C])
+add(p, C, lgnd)
+savefig(p, "Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).svg", (1000, 600))
+run(`inkscape -z Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).svg -e Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).png -d 300 --export-background=WHITE`)
 run(`rm Fig/Lambda_$(mt_int)_$(mt_float)_$(xi).svg`)

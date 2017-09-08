@@ -1,4 +1,4 @@
-using Plots
+using Winston
 
 println("-----------------------------------")
 println("  Welcome to Potential Plot.jl")
@@ -11,16 +11,20 @@ xi = ARGS[3]
 Data = readcsv("Data/Cosmo_$(mt_int)_$(mt_float)_$(xi).csv")
 
 
-t = Data[:,1];
+phi = Data[:,1];
 V = Data[:,2];
 
-# Background
-gr(size=(1000,600), dpi=100)
-
-# Gauge Plot
-plot(t, V, xlims=(0,5), ylims=(0,0.00000006), title="Potential Plots", label="V", show=false);
-xlabel!("t");
-ylabel!("V");
-savefig("Fig/Potential_$(mt_int)_$(mt_float)_$(xi).svg")
-run(`inkscape -z Fig/Potential_$(mt_int)_$(mt_float)_$(xi).svg -e Fig/Potential_$(mt_int)_$(mt_float)_$(xi).png -d 600`)
+# Potential Plot
+p = FramedPlot(
+    title="Potential Plots",
+    xlabel="\\phi",
+    ylabel="V",
+    xrange=(0,5),
+    yrange=(0,6e-08));
+C = Curve(phi, V)
+setattr(C, "label", "V")
+lgnd = Legend(.9, .9, [C])
+add(p, C, lgnd)
+savefig(p, "Fig/Potential_$(mt_int)_$(mt_float)_$(xi).svg", (1000, 600))
+run(`inkscape -z Fig/Potential_$(mt_int)_$(mt_float)_$(xi).svg -e Fig/Potential_$(mt_int)_$(mt_float)_$(xi).png -d 300 --export-background=WHITE`)
 run(`rm Fig/Potential_$(mt_int)_$(mt_float)_$(xi).svg`)
