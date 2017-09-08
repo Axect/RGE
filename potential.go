@@ -1,15 +1,11 @@
 package RGE
 
-import (
-	"fmt"
+import "math"
 
-	"github.com/Axect/csv"
-)
-
-// CalcPotential calculate potential
-func CalcPotential(mtint, mtfloat, xi int) {
-	dir := fmt.Sprintf("Data/Gauge_%d_%d_%d", mtint, mtfloat, xi)
-	Temp := csv.Read(dir)
-	Data := RConvert(Temp)
-	fmt.Println(Data)
+// RunCosmo calculate Cosmo from RGE
+func (R RGE) RunCosmo(xi float64) Cosmo {
+	var C Cosmo
+	// Potential Formula
+	C.V = (R.lH * math.Pow(R.G, 4) * math.Pow(R.phi, 4) / (4 * math.Pow(1+xi*math.Pow(R.G, 2)*math.Pow(R.phi, 2)/math.Pow(MpR, 2), 2))) / math.Pow(MpR, 4)
+	return C
 }

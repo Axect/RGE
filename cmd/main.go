@@ -30,10 +30,14 @@ func main() {
 	mt, xi, choice := Welcome()
 
 	// Running and receive mtint, mtfloat, xi
-	fmt.Println("Data Processing...")
+	fmt.Println("-----------------------------------")
+	fmt.Println("  Data Processing...  ")
+	fmt.Println("-----------------------------------")
+	fmt.Println()
 	MX := RGE.Running(mt, xi)
 	mtint := MX[0]
 	mtfloat := MX[1]
+	fmt.Println("Calculation Complete!")
 	fmt.Println()
 
 	// Handle Plot with Julia
@@ -68,6 +72,13 @@ func main() {
 		subDir = "Lambda_plot.jl"
 		cmdDir = append(cmdDir, subDir)
 		fmt.Println("Draw Lambda Plot...")
+	}
+
+	// Potential Plot
+	if check.Contains("4", choice) {
+		subDir = "Potential_plot.jl"
+		cmdDir = append(cmdDir, subDir)
+		fmt.Println("Draw Potential Plot...")
 	}
 
 	for _, dir := range cmdDir {
@@ -118,9 +129,9 @@ func Welcome() (float64, float64, []string) {
 	fmt.Println("Input parameters: ")
 	fmt.Println("ex) 170.85 50")
 	var Mt, Xi float64
-	choice := make([]string, 3, 3)
+	choice := make([]string, 4, 4)
 	fmt.Scanln(&Mt, &Xi)
-	fmt.Println("Select Plots: 1.Gauge, 2.G(t), 3.Lambda")
+	fmt.Println("Select Plots: 1.Gauge, 2.G(t), 3.Lambda, 4.Potential")
 	for i := range choice {
 		fmt.Scan(&choice[i])
 	}

@@ -53,3 +53,11 @@ func RConvert(Temp [][]string) []RGE {
 	}
 	return Array
 }
+
+// // Read reads csv to []RGE
+// func Read(mtint, mtfloat, xi int) []RGE {
+// 	dir := fmt.Sprintf("Data/Gauge_%d_%d_%d", mtint, mtfloat, xi)
+// 	Temp := csv.Read(dir)
+// 	Data := RConvert(Temp)
+// 	return Data
+// }
