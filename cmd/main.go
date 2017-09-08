@@ -31,7 +31,7 @@ func main() {
 
 	// Running and receive mtint, mtfloat, xi
 	fmt.Println("Data Processing...")
-	MX := RGE.RGERunning(mt, xi)
+	MX := RGE.Running(mt, xi)
 	mtint := MX[0]
 	mtfloat := MX[1]
 	fmt.Println()

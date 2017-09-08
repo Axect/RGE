@@ -14,3 +14,10 @@ type RGE struct {
 	phi float64
 	G   float64
 }
+
+type Cosmo struct {
+	V   float64
+	eps float64
+	eta float64
+	A   float64
+}

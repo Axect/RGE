@@ -7,13 +7,14 @@ import (
 	"github.com/Axect/csv"
 )
 
+// Run just run
 type Run interface {
 	Run(float64, float64) // Run RGE
 	Copy()                // Copy RGE to RGE
 	InputFormula(RGE, float64, float64)
 }
 
-// Single Running - You can change Numerical Integration method here (Default: Euler)
+// Run is Single Running - You can change Numerical Integration method here (Default: Euler)
 func (R *RGE) Run(mt, xi float64) {
 	var B Beta
 
@@ -31,22 +32,6 @@ func (R *RGE) Run(mt, xi float64) {
 	R.G -= h * B.gamma / (1 + B.gamma)
 }
 
-// Copy protects RGE value which is in Container
-func (R RGE) Copy() RGE {
-	var NR RGE
-
-	NR.t = R.t
-	NR.lH = R.lH
-	NR.yt = R.yt
-	NR.g1 = R.g1
-	NR.g2 = R.g2
-	NR.g3 = R.g3
-	NR.phi = R.phi
-	NR.G = R.G
-
-	return NR
-}
-
 // SolveRGE running RGE for Step
 func (C *Container) SolveRGE(mt, xi float64) {
 	R := Initialize(mt)
@@ -58,8 +43,8 @@ func (C *Container) SolveRGE(mt, xi float64) {
 	}
 }
 
-// RGERunning is main tool
-func RGERunning(mt, xi float64) []int {
+// Running is main tool
+func Running(mt, xi float64) []int {
 	var C Container
 	C.SolveRGE(mt, xi)
 
@@ -74,13 +59,4 @@ func RGERunning(mt, xi float64) []int {
 	title := fmt.Sprintf("Data/Gauge_%d_%d_%d.csv", mtint, mtfloat, xiint)
 	csv.Write(W, title)
 	return []int{mtint, mtfloat, xiint}
-}
-
-// Convert supports csv.Write
-func Convert(List []float64) []string {
-	Temp := make([]string, len(List), len(List))
-	for i := range List {
-		Temp[i] = fmt.Sprintf("%v", List[i])
-	}
-	return Temp
 }
