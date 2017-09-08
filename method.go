@@ -38,8 +38,8 @@ func Convert(List []float64) []string {
 // RConvert convert reading csv file to []RGE
 func RConvert(Temp [][]string) []RGE {
 	Array := make([]RGE, len(Temp), len(Temp))
+	var err error
 	for i := range Array {
-		var err error
 		Array[i].t, err = strconv.ParseFloat(Temp[i][0], 64)
 		Array[i].lH, err = strconv.ParseFloat(Temp[i][1], 64)
 		Array[i].yt, err = strconv.ParseFloat(Temp[i][2], 64)
@@ -47,9 +47,9 @@ func RConvert(Temp [][]string) []RGE {
 		Array[i].g2, err = strconv.ParseFloat(Temp[i][4], 64)
 		Array[i].g3, err = strconv.ParseFloat(Temp[i][5], 64)
 		Array[i].G, err = strconv.ParseFloat(Temp[i][6], 64)
-		if err != nil {
-			log.Fatal(err)
-		}
+	}
+	if err != nil {
+		log.Fatal(err)
 	}
 	return Array
 }
