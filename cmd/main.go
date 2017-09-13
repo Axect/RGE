@@ -90,6 +90,7 @@ func main() {
 	fmt.Println("All Process Finished")
 }
 
+// Routine runs julia for plotting by parallel
 func Routine(JuliaFolder, subdir string, cmdBody []string) {
 	defer wg.Done()
 
@@ -110,6 +111,7 @@ func Routine(JuliaFolder, subdir string, cmdBody []string) {
 	return
 }
 
+// Welcome handle IO, Print
 func Welcome() (float64, float64, []string) {
 	// Running with Go
 	fmt.Println("-----------------------------------")
