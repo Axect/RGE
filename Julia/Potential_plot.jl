@@ -14,13 +14,25 @@ Data = readcsv("Data/Cosmo_$(mt_int)_$(mt_float)_$(xi).csv")
 phi = Data[:,1];
 V = Data[:,2];
 
+# Set Figure Axis
+function KeyGenerator(phi)
+    for (i, elem) in enumerate(phi)
+        if abs(elem-5) < 1e-03
+            key_index = i
+            return key_index
+        end
+    end
+end
+key_index = KeyGenerator(phi)
+y_key = V[key_index];
+
 # Potential Plot
 p = FramedPlot(
     title="Potential Plots",
     xlabel="\\phi",
     ylabel="V",
     xrange=(0,5),
-    yrange=(0,6e-08));
+    yrange=(0,y_key+0.1y_key));
 C = Curve(phi, V)
 setattr(C, "label", "V")
 lgnd = Legend(.9, .9, [C])
