@@ -389,10 +389,10 @@ go get -u github.com/Axect/RGE
 		* Julia Winston Package
 		* Inkscape
 	
-8. Build `main.go`
+8. Make
 
 	```bash
-	go build cmd/main.go
+	make
 	```
 	
 9. Run
