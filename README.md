@@ -239,83 +239,96 @@ go get -u github.com/Axect/RGE
 
 	```Go
 	const (
-		cmdName     = "julia"
+		ver         = "0.0.1"
+		author      = "Axect"
+		page        = "https://github.com/Axect/RGE"
+		Julia       = "julia"
 		JuliaFolder = "Julia/"
 	)
-	
+
 	var wg sync.WaitGroup
-	
+
 	func main() {
 		// parameter set (choose can be list)
 		// 1.Gauge, 2.G(t), 3.Lambda, 4.Potential
-		Mt, Xi, choice := os.Args[1], os.Args[2], os.Args[3:]
-		mt, err1 := strconv.ParseFloat(Mt, 64)
-		xi, err2 := strconv.ParseFloat(Xi, 64)
-	
-		if err1 != nil || err2 != nil {
-			log.Fatal("Can't convert string to float64. Plz input proper value")
+		if err := exec.Command("clear", "").Run(); err != nil {
+			log.Fatal("Can't clear")
 		}
-		Welcome()
+		mt, xi, choice := Welcome()
+
 		// Running and receive mtint, mtfloat, xi
-		fmt.Println("Data Processing...")
-		MX := RGE.RGERunning(mt, xi)
+		fmt.Println("-----------------------------------")
+		fmt.Println("  Data Processing...  ")
+		fmt.Println("-----------------------------------")
+		fmt.Println()
+		MX := RGE.Running(mt, xi)
 		mtint := MX[0]
 		mtfloat := MX[1]
-	
-		// Handle Plot with Julia
-		fmt.Println("-------------------------")
-		fmt.Println("Welcome to RGE Plot")
-		fmt.Println("-------------------------")
+		fmt.Println("Calculation Complete!")
 		fmt.Println()
-	
+
+		// Handle Plot with Julia
+		fmt.Println("-----------------------------------")
+		fmt.Println("  Plotting...  ")
+		fmt.Println("-----------------------------------")
+		fmt.Println()
+
 		// Cmd Settings
 		cmdBody := strings.Fields(fmt.Sprintf("%d %d %d", mtint, mtfloat, int(xi+0.4)))
 		var subDir string
 		var cmdDir []string
-	
+
 		fmt.Println("Input Parameter: ", cmdBody)
-	
+
 		// Gauge Plot
 		if check.Contains("1", choice) {
 			subDir = "Gauge_plot.jl"
 			cmdDir = append(cmdDir, subDir)
 			fmt.Println("Draw Gauge Plot...")
 		}
-	
+
 		// G(t) Plot
 		if check.Contains("2", choice) {
 			subDir = "G_plot.jl"
 			cmdDir = append(cmdDir, subDir)
 			fmt.Println("Draw G(t) Plot...")
 		}
-	
+
 		// Lambda Plot
 		if check.Contains("3", choice) {
 			subDir = "Lambda_plot.jl"
 			cmdDir = append(cmdDir, subDir)
 			fmt.Println("Draw Lambda Plot...")
 		}
-	
+
+		// Potential Plot
+		if check.Contains("4", choice) {
+			subDir = "Potential_plot.jl"
+			cmdDir = append(cmdDir, subDir)
+			fmt.Println("Draw Potential Plot...")
+		}
+
 		for _, dir := range cmdDir {
 			wg.Add(1)
 			go Routine(JuliaFolder, dir, cmdBody)
 		}
 		wg.Wait()
-	
+
 		fmt.Println("All Process Finished")
 	}
-	
+
+	// Routine runs julia for plotting by parallel
 	func Routine(JuliaFolder, subdir string, cmdBody []string) {
 		defer wg.Done()
-	
+
 		cmdArgs := append([]string{JuliaFolder + subdir}, cmdBody...)
-	
+
 		var (
 			cmdOut []byte
 			err    error
 		)
-	
-		if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err != nil {
+
+		if cmdOut, err = exec.Command(Julia, cmdArgs...).Output(); err != nil {
 			log.Fatal("Can't execute commands")
 		}
 		comp := string(cmdOut)
@@ -324,32 +337,25 @@ go get -u github.com/Axect/RGE
 		fmt.Println()
 		return
 	}
-	
-	func Welcome() {
-		// Running with Go
-		fmt.Println("--------------------------------")
-		fmt.Println("Welcome to RGE.go")
-		fmt.Println("--------------------------------")
-		fmt.Println()
-	}
+	// ...
 	```
 
 7. Handle Julia Files in `Julia/`
 
 	```Julia
-	using Plots
+	using Winston
 
-	println("---------------------------")
-	println("Welcome to Gauge Plot.jl")
-	println("---------------------------")
-	
+	println("-----------------------------------")
+	println("  Welcome to Gauge Plot.jl")
+	println("-----------------------------------")
+
 	mt_int = ARGS[1]
 	mt_float = ARGS[2]
 	xi = ARGS[3]
-	
+
 	Data = readcsv("Data/Gauge_$(mt_int)_$(mt_float)_$(xi).csv")
-	
-	
+
+
 	t = Data[:,1];
 	# λ = Data[:,2];
 	yt = Data[:,3];
@@ -357,21 +363,31 @@ go get -u github.com/Axect/RGE
 	g2 = Data[:,5];
 	g3 = Data[:,6];
 	# G = Data[:,7];
-	
-	# Background
-	gr(size=(1000,600), dpi=600)
-	
+
 	# Gauge Plot
-	plot(t, yt, title="Gauge Plots", label="yt", show=false);
-	plot!(t, g1, label="g1");
-	plot!(t, g2, label="g2");
-	plot!(t, g3, label="g3");
-	xlabel!("t");
-	ylabel!("gauge");
-	savefig("Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).svg")
+	p = FramedPlot(
+		title="Gauge Plots",
+		xlabel="t",
+		ylabel="Gauge");
+	C0 = Curve(t, yt, color="purple")
+	C1 = Curve(t, g1, color="red")
+	C2 = Curve(t, g2, color="blue")
+	C3 = Curve(t, g3, color="green")
+	setattr(C0, "label", "yt")
+	setattr(C1, "label", "g1")
+	setattr(C2, "label", "g2")
+	setattr(C3, "label", "g3")
+	lgnd = Legend(.9, .9, [C0, C1, C2, C3]);
+	add(p, C0, C1, C2, C3, lgnd)
+	savefig(p, "Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).svg", (1000, 600))
+	run(`inkscape -z Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).svg -e Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).png -d 300 --export-background=WHITE`)
+	run(`rm Fig/Gauge_$(mt_int)_$(mt_float)_$(xi).svg`)
+
 	```
 	* Handle Julia is so easy.
-	* You should do `Pkg.add("Plots")` in Julia first.
+	* Requirements:
+		* Julia Winston Package
+		* Inkscape
 	
 8. Build `main.go`
 
@@ -379,9 +395,8 @@ go get -u github.com/Axect/RGE
 	go build cmd/main.go
 	```
 	
-9. Run with args
+9. Run
 
 	```bash
-	./main 170.85 50 1 2 3
+	./main
 	```
-	* ./main (Top mass) (xi) (Plots: 1.Gauge, 2.G(t), 3.Lambda)
